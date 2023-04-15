@@ -1,8 +1,10 @@
 const { Client, GatewayIntentBits, Attachment } = require('discord.js');
-const { joinVoiceChannel, createAudioResource, NoSubscriberBehavior, createAudioPlayer } = require('@discordjs/voice');
+const { joinVoiceChannel, createAudioResource, NoSubscriberBehavior, createAudioPlayer, generateDependencyReport } = require('@discordjs/voice');
 const ytdl = require('ytdl-core');
 require('dotenv').config()
 
+const PREFIX = "!";
+var servers = {};
 
 const client = new Client({
   intents: [
@@ -11,62 +13,41 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildVoiceStates,
     GatewayIntentBits.GuildMembers
-  ]
+  ],
 });
 
 
-/*
-client.on('messageCreate', async (message) => {
-  if (!message.guild) return;
+client.on("messageCreate", (message) => {
 
-  if (message.content.startsWith('!play')) {
-    // Verifica se l'utente si trova in un canale vocale
-    if (!message.member.voice.channel) {
-      return message.reply('Devi essere in un canale vocale per riprodurre la musica!');
-    }
+  let args = message.content.substring(PREFIX.length).split(" ");
 
-    // Verifica se il bot ha il permesso di entrare nel canale vocale
-    if (!message.guild.me.permissions.has('CONNECT') || !message.guild.me.permissions.has('SPEAK')) {
-      return message.reply('Non ho il permesso di entrare nel tuo canale vocale!');
-    }
+  switch (args[0]) {
 
-    // Ottiene l'URL del video da riprodurre
-    const args = message.content.split(' ');
-    const videoURL = args[1];
+    case "play":
 
-    const player = createAudioPlayer();
+      if (args[1] == null)
+        return message.reply('Put the link bestia!');
+      if (!message.member.voice.channel)
+        return message.reply('Devi essere in un canale vocale per riprodurre la musica!');
 
-    // Crea l'audio resource del video
-    try {
-      const resource = createAudioResource(ytdl(videoURL, { filter: 'audioonly' }), { inlineVolume: true });
-      // Connette il bot al canale vocale
-      const connection = joinVoiceChannel({
-        channelId: message.member.voice.channel.id,
-        guildId: message.guild.id,
-        adapterCreator: message.guild.voiceAdapterCreator
-      });
-
-      // Riproduce la musica
-
-      connection.subscribe(player);
-      player.play(resource);
-      player.on('error', error => {
-        console.error(error);
-        message.reply('Si è verificato un errore durante la riproduzione della musica!');
-      });
-
-      // Avvisa quando il video è stato completamente riprodotto
-      player.on(NoSubscriberBehavior.Play, () => {
-        message.reply('La riproduzione della musica è terminata!');
-        connection.destroy();
-      });
-    }
-    catch (error) {
-      console.log(error)
-    }
+      if (!message.guild.voiceConnection) {
+        const player = createAudioPlayer();
+        const connection = joinVoiceChannel({
+          channelId: message.member.voice.channel.id,
+          guildId: message.guild.id,
+          adapterCreator: message.guild.voiceAdapterCreator
+        });
+        const stream = createAudioResource(ytdl(args[1], { filter: 'audioonly' }));
+        player.play(stream);
+        connection.subscribe(player);
+        player.on('error', error => {
+          console.error('Errore durante la riproduzione dell\'audio:', error);
+          console.log(generateDependencyReport());
+        });
+      }
+      break;
   }
 });
-*/
 
 client.on("ready", () => {
   console.log(client.user.username)
