@@ -2,7 +2,6 @@ const { Client, GatewayIntentBits, Attachment } = require('discord.js');
 const { joinVoiceChannel, createAudioResource, NoSubscriberBehavior, createAudioPlayer, generateDependencyReport } = require('@discordjs/voice');
 require('dotenv').config();
 const { video_basic_info, stream } = require('play-dl');
-const play = require('play-dl')
 
 const PREFIX = "!";
 var servers = {};
@@ -32,7 +31,7 @@ client.on('messageCreate', async message => {
 
       let args = message.content.split('play ')[1].split(' ')[0]
 
-      let stream = await play.stream(args)
+      let streamData = await play.stream(args)
       
       /*
       OR if you want to get info about youtube link and then stream it
@@ -41,8 +40,8 @@ client.on('messageCreate', async message => {
       let stream = await play.stream_from_info(yt_info)
       */
 
-      let resource = createAudioResource(stream.stream, {
-          inputType: stream.type
+      let resource = createAudioResource(streamData.stream, {
+          inputType: streamData.type
       })
 
       let player = createAudioPlayer({
@@ -57,39 +56,6 @@ client.on('messageCreate', async message => {
   }
 })
 
-/*
-client.on("messageCreate", async (message) => {
-
-  let args = message.content.split('play ')[1].split(' ')[0]
-
-  switch (args[0]) {
-
-    case "play":
-
-      if (args[1] == null)
-        return message.reply('Put the link bestia!');
-      if (!message.member.voice.channel)
-        return message.reply('Devi essere in un canale vocale per riprodurre la musica!');
-
-      if (!message.guild.voiceConnection) {
-        const player = createAudioPlayer();
-        const connection = joinVoiceChannel({
-          channelId: message.member.voice.channel.id,
-          guildId: message.guild.id,
-          adapterCreator: message.guild.voiceAdapterCreator
-        });
-        const stream = createAudioResource(ytdl(args[1], { filter: 'audioonly' }));
-        player.play(stream);
-        connection.subscribe(player);
-        player.on('error', error => {
-          console.error(error);
-          console.log(generateDependencyReport());
-        });
-      }
-      break;
-  }
-});
-*/
 client.on("ready", () => {
   console.log(client.user.username)
 })
