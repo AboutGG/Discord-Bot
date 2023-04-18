@@ -15,6 +15,12 @@ const client = new Client({
   ],
 });
 
+const player = createAudioPlayer({
+  behaviors: {
+    noSubscriber: NoSubscriberBehavior.Pause
+  }
+})
+
 client.on('messageCreate', async message => {
 
   let args = splitString(message.content)
@@ -45,19 +51,22 @@ client.on('messageCreate', async message => {
         inputType: streamData.type
       })
 
-      let player = createAudioPlayer({
-        behaviors: {
-          noSubscriber: NoSubscriberBehavior.Play
-        }
-      })
-
       player.play(resource)
 
       connection.subscribe(player)
       break;
+
+      case "!stop":
+        player.stop();
+      break;
   }
 
 });
+
+player.on(AudioPlayerStatus.Playing, () => {
+	console.log('The audio player has started playing!');
+});
+
 /*
 client.on('messageCreate', async message => {
 
