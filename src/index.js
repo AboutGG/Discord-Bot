@@ -1,8 +1,7 @@
-const { Client, GatewayIntentBits, Attachment } = require('discord.js');
-const { joinVoiceChannel, createAudioResource, NoSubscriberBehavior, createAudioPlayer, generateDependencyReport } = require('@discordjs/voice');
+const { Client, GatewayIntentBits, Attachment, Collection } = require('discord.js');
+const { joinVoiceChannel, createAudioResource, NoSubscriberBehavior, createAudioPlayer,  AudioPlayerStatus,generateDependencyReport } = require('@discordjs/voice');
 require('dotenv').config();
 const { video_basic_info, stream, yt_validate, search } = require('play-dl');
-
 const PREFIX = "!";
 
 const client = new Client({
@@ -15,9 +14,11 @@ const client = new Client({
   ],
 });
 
+client.commands = new Collection();
+
 const player = createAudioPlayer({
   behaviors: {
-    noSubscriber: NoSubscriberBehavior.Pause
+    noSubscriber: NoSubscriberBehavior.Pause,
   }
 })
 
