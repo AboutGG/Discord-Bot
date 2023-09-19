@@ -1,5 +1,6 @@
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const { joinVoiceChannel, createAudioResource, NoSubscriberBehavior, createAudioPlayer, AudioPlayerStatus, generateDependencyReport } = require('@discordjs/voice');
+const {Player} = require('discord-player');
 require('dotenv').config();
 const { TOKEN } = process.env;
 const fs = require("fs");
@@ -15,15 +16,11 @@ const client = new Client({
 	],
 });
 
-client.player = createAudioPlayer({
-	behaviors: {
-		noSubscriber: NoSubscriberBehavior.Pause,
-	}
-});
+const player = new Player(client);
+
 
 client.commands = new Collection();
 client.commandArray = [];
-client.player.queue = [];
 
 const functionFolders = fs.readdirSync("./src/functions");
 
