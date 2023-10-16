@@ -1,9 +1,9 @@
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
-const { joinVoiceChannel, createAudioResource, NoSubscriberBehavior, createAudioPlayer, AudioPlayerStatus, generateDependencyReport } = require('@discordjs/voice');
+// const { joinVoiceChannel, createAudioResource, NoSubscriberBehavior, createAudioPlayer, AudioPlayerStatus, generateDependencyReport } = require('@discordjs/voice');
 const {Player} = require('discord-player');
 require('dotenv').config();
 const { TOKEN } = process.env;
-const fs = require("fs");
+const fs= require("fs");
 
 // Create a new client instance
 const client = new Client({
@@ -16,8 +16,9 @@ const client = new Client({
 	],
 });
 
+// Entrypoint for discord-player based application
 const player = new Player(client);
-
+player.extractors.loadDefault();
 
 client.commands = new Collection();
 client.commandArray = [];
